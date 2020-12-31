@@ -1,0 +1,87 @@
+.search-input {
+    background-color: #f2f3f7 !important;
+}
+
+.people-container {
+    margin-top: 20px;
+}
+
+.item {
+    display: flex;
+    margin: 1.3rem 0 2.3rem 0;
+}
+
+.media {
+    border-radius: 50%;
+    display: inline-flex;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+}
+
+.profile-image {
+    width: 100%;
+    max-width: 68px;
+    height: 58px;
+    border-radius: 50%
+}
+
+.info {
+    padding-top: 0.1rem;
+    -webkit-box-flex: 3;
+    -ms-flex: 3;
+    flex: 3;
+    margin-left: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.right-status {
+    text-align: right;
+    padding-top: 0.2rem;
+    -webkit-box-flex: 1.1;
+    -ms-flex: 1.1;
+    /*flex: 1.1;*/
+    display: flex;
+    align-items: center;
+}
+
+.m-t-20 {
+    margin-top: 20px;
+}
+
+.kt-badge.kt-badge--pill {
+    border-radius: 2rem;
+}
+.kt-badge.kt-badge--inline {
+    height: auto;
+    width: auto;
+    padding: 0.15rem 0.75rem;
+    border-radius: 2px;
+}
+.kt-badge.kt-badge--success {
+    color: #ffffff;
+    background: #0abb87;
+}
+
+.kt-badge.kt-badge--info {
+    color: #ffffff;
+    background: #5578eb;
+}
+
+.kt-badge.kt-badge--danger {
+    color: #ffffff;
+    background: #fd397a;
+}
+
+.kt-badge {
+    padding: 0;
+    margin: 0;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    font-size: 0.8rem;
+}
