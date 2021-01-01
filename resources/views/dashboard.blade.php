@@ -2,17 +2,21 @@
 @section('title', 'Dashboard')
 
 @section('custom_css')
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ asset('lib/bootstrap-select/dist/css/bootstrap-select.min.css') }}">
+    <link href="{{ asset('custom/js/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
+    <link href="{{ asset('custom/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="{{ asset('lib/select2/dist/css/select2.css') }}">
 @endsection
 
 @section('content')
-    <div class="row m-t-20">
-        <div class="col-md-12">
 
-            {{-- Search Input --}}
-            <div class="kt-searchbar">
-                <div class="input-group">
-                    <div class="input-group-prepend"><span class="input-group-text" id="basic-addon1">
+    <div class="kt-portlet__body">
+        <div class="kt-form kt-form--label-right kt-margin-t-20 kt-margin-b-10">
+            <div class="row align-items-center">
+                <div class="col-xl-8 order-2 order-xl-1">
+                    <div class="kt-searchbar">
+                        <div class="input-group">
+                            <div class="input-group-prepend"><span class="input-group-text" id="basic-addon1">
                                 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                                      width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="kt-svg-icon">
                                     <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -26,80 +30,62 @@
                                     </g>
                                 </svg>
                             </span>
-                    </div>
-                    <select class="search-people form-control search-input" name="" id="search-people"></select>
-                    <select type="text" class="form-control" name="filter" id="">
-                        <option value="friends" selected="selected">Friends</option>
-                        <option value="pending">Pending</option>
-                        <option value="rejected">Rejected</option>
-                    </select>
-                </div>
-            </div>
-            {{-- End Search Input --}}
-
-            {{-- Friends List --}}
-            <div class="people-container">
-                <div class="items">
-                    <div class="item">
-                        <span class="media">
-                            <img src="{{ asset('media/profile.png') }}" class="profile-image" alt="">
-                        </span>
-                        <div class="info">
-                            <span>
-                                <a href="#">Boris Avetisyan</a>
-                            </span>
-                        </div>
-                        <div class="right-status">
-                            <span class="kt-badge kt-badge--success kt-badge--inline kt-badge--pill">Approved</span>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <span class="media">
-                            <img src="{{ asset('media/profile.png') }}" class="profile-image" alt="">
-                        </span>
-                        <div class="info">
-                            <span>
-                                <a href="#">Karen Darpinyan</a>
-                            </span>
-                        </div>
-                        <div class="right-status">
-                            <span class="kt-badge kt-badge--info kt-badge--inline kt-badge--pill">Pending</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <h2>Suggestions</h2>
-            {{-- Friends List --}}
-            <div class="people-container">
-                <div class="items">
-                    @foreach($suggestions as $suggestion)
-                        <div class="item">
-                            <span class="media">
-                                <img src="{{ asset('media/profile.png') }}" class="profile-image" alt="">
-                            </span>
-                            <div class="info">
-                            <span>
-                                <a href="#">{{ $suggestion->name . ' ' . $suggestion->surname . '('.$suggestion->email.')'}}</a>
-                                <span class="kt-badge kt-badge--info kt-badge--inline kt-badge--pill">{{ $suggestion->status }}</span>
-                            </span>
                             </div>
-                            <div class="right-status">
-                                <button class="suggestion-action" data-action="{{ \App\Models\Relationship::APPROVED }}" data-suggestion="{{ $suggestion->id }}" >Accept</button>
-                                <button class="suggestion-action" data-action="{{ \App\Models\Relationship::REJECTED }}" data-suggestion="{{ $suggestion->id }}" >Reject</button>
-                            </div>
+                            <select class="search-people form-control search-input" name="" id="search-people"></select>
                         </div>
-                    @endforeach
+                    </div>
                 </div>
             </div>
-
-
         </div>
     </div>
+
+    <div class="kt-portlet__body">
+        <div class="kt-form kt-form--label-right kt-margin-t-20 kt-margin-b-10">
+            <div class="row align-items-center">
+                <div class="col-xl-8 order-2 order-xl-1">
+                    <div class="row align-items-center">
+                        <div class="col-md-4 kt-margin-b-20-tablet-and-mobile">
+                            <div class="kt-input-icon kt-input-icon--left">
+                                <input type="text" class="form-control" placeholder="Search" id="search">
+                                <span class="kt-input-icon__icon kt-input-icon__icon--left">
+                                        <span><i class="la la-search"></i></span>
+                                    </span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 kt-margin-b-20-tablet-and-mobile">
+                            <div class="kt-form__group kt-form__group--inline w-100">
+                                <div class="kt-form__control">
+                                    <select class="form-control bootstrap-select" id="kt_form_status">
+                                        <option selected="selected" value="{{ \App\Models\Relationship::APPROVED }}">Friends</option>
+                                        <option value="{{ \App\Models\Relationship::REJECTED }}">Rejected</option>
+                                        <option value="{{ \App\Models\Relationship::PENDING }}">Pending</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="kt-portlet__body kt-padding-t-0">
+        <div class="users-datatable" id="users-datatable" data-url="{{ route('users.data') }}" ></div>
+    </div>
+
 @endsection
 
 @section('custom_scripts')
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+    <script src="{{ asset('lib/select2/dist/js/select2.js') }}"></script>
+    <script src="{{ asset('lib/bootstrap-select/dist/js/bootstrap-select.min.js') }}"></script>
+    <script src="{{ asset('lib/block-ui/jquery.blockUI.js') }}"></script>
+    <script src="{{ asset('lib/js-cookie/src/js.cookie.js') }}"></script>
+    <script src="{{ asset('lib/sticky-js/dist/sticky.min.js') }}"></script>
+    <script>var KTAppOptions = {"colors":{"state":{"brand":"#5d78ff","dark":"#282a3c","light":"#ffffff","primary":"#5867dd","success":"#34bfa3","info":"#36a3f7","warning":"#ffb822","danger":"#fd3995"},"base":{"label":["#c5cbe3","#a1a8c3","#3d4465","#3e4466"],"shape":["#f0f3ff","#d9dffa","#afb4d4","#646c9a"]}}};</script>
+    <script src="{{ asset('custom/js/scripts.bundle.js') }}"></script>
+    {{--DataTables Scripts--}}
+    <script src="{{ asset('custom/js/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
+
     <script src="{{ asset('custom/js/dashboard.js') }}"></script>
 @endsection
 

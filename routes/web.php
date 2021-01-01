@@ -21,5 +21,7 @@ Route::group(['middleware' => ['auth.basic']], function () {
         Route::post('friend', [\App\Http\Controllers\UsersController::class, 'friend']);
         Route::post('unfriend', [\App\Http\Controllers\UsersController::class, 'unfriend']);
         Route::post('suggestion/respond', [\App\Http\Controllers\UsersController::class, 'suggestionRespond']);
+
+        Route::post('data', [\App\Http\Controllers\UsersController::class, 'data'])->name('users.data');
     });
 });

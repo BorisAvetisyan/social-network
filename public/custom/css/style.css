@@ -85,3 +85,12 @@
     border-radius: 50%;
     font-size: 0.8rem;
 }
+
+.header-background {
+    background-image: url(../../media/bg-1.jpg)
+}
+
+.select2-result-repository__meta {
+    display: flex;
+    justify-content: space-between;
+}

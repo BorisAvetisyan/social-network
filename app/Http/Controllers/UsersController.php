@@ -6,6 +6,7 @@ use App\Models\Relationship;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UsersController extends Controller
 {
@@ -67,5 +68,41 @@ class UsersController extends Controller
             return response()->json(['success' => false, 'message' => 'Failed to change status']);
         }
         return response()->json(['success' => true]);
+    }
+
+
+    public function data(Request $request) {
+        $status = $request->get('status');
+        $target = $request->get('target');
+        $authUserId = Auth::user()->id;
+
+        $query = User::query();
+        $query->join('relationships', 'relationships.receiver_id', '=', 'users.id');
+        if($status === Relationship::APPROVED) {
+            $query->join('relationships as rs', 'rs.sender_id', '=', 'users.id');
+            $query->where('rs.status', '=', $status);
+            $query->whereRaw('(rs.sender_id = ? or relationships.receiver_id = ?)', [$authUserId, $authUserId]);
+        } elseif ($status === Relationship::REJECTED) {
+            $query->where('sender_id', '=', $authUserId);
+        } elseif ($status === Relationship::PENDING) {
+            $query->where('sender_id', '=', $authUserId);
+        }
+
+        $query->where('relationships.status', '=', $status);
+
+        $data = $query->get()->all();
+        return response()->json([
+            'meta' => $this->getMetaInformation($request->get('pagination', []), count($data)),
+            'data' => $data
+        ]);
+    }
+
+    public function getMetaInformation($pagination, $dataCount) {
+        return array(
+            'page' => $pagination['page'],
+            'pages' => ceil($dataCount / $pagination['perpage']),
+            'perpage' => $pagination['perpage'],
+            'total' => $dataCount
+        );
     }
 }
