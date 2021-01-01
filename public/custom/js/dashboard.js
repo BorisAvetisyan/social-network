@@ -1,7 +1,25 @@
 $(document).ready(function () {
     initializeSelect2();
     friend();
+    handleSuggestionsAction();
+    handleFilterChange();
 })
+
+function handleFilterChange() {
+    // handles
+}
+
+function handleSuggestionsAction() {
+    $(".suggestion-action").click(function () {
+        let action = $(this).data("action");
+        let suggestion = $(this).data('suggestion');
+
+        makeAjaxRequest('users/suggestion/respond','post', {suggestion: suggestion, action: action}, (err, res) => {
+            let className = action === 'approved' ? "success" : "danger";
+            $(this).closest('.right-status').html(`<span class="kt-badge kt-badge--${className} kt-badge--inline kt-badge--pill">${action}</span>`)
+        })
+    })
+}
 
 
 function initializeSelect2() {
@@ -43,7 +61,9 @@ function friend() {
     $(document).on('click', ".friend", function () {
         let user = $(this).data('user');
         makeAjaxRequest("users/friend", 'post', {user: user}, (err, res) => {
-            console.log(res);
+            if(res.success) {
+                $(this).attr('disabled', true);
+            }
         })
     })
 }

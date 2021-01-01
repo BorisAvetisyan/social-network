@@ -28,6 +28,11 @@
                             </span>
                     </div>
                     <select class="search-people form-control search-input" name="" id="search-people"></select>
+                    <select type="text" class="form-control" name="filter" id="">
+                        <option value="friends" selected="selected">Friends</option>
+                        <option value="pending">Pending</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
                 </div>
             </div>
             {{-- End Search Input --}}
@@ -64,37 +69,27 @@
                 </div>
             </div>
 
-
             <h2>Suggestions</h2>
             {{-- Friends List --}}
             <div class="people-container">
                 <div class="items">
-                    <div class="item">
-                        <span class="media">
-                            <img src="{{ asset('media/profile.png') }}" class="profile-image" alt="">
-                        </span>
-                        <div class="info">
-                            <span>
-                                <a href="#">Boris Avetisyan</a>
+                    @foreach($suggestions as $suggestion)
+                        <div class="item">
+                            <span class="media">
+                                <img src="{{ asset('media/profile.png') }}" class="profile-image" alt="">
                             </span>
-                        </div>
-                        <div class="right-status">
-                            <span class="kt-badge kt-badge--success kt-badge--inline kt-badge--pill">Approved</span>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <span class="media">
-                            <img src="{{ asset('media/profile.png') }}" class="profile-image" alt="">
-                        </span>
-                        <div class="info">
+                            <div class="info">
                             <span>
-                                <a href="#">Karen Darpinyan</a>
+                                <a href="#">{{ $suggestion->name . ' ' . $suggestion->surname . '('.$suggestion->email.')'}}</a>
+                                <span class="kt-badge kt-badge--info kt-badge--inline kt-badge--pill">{{ $suggestion->status }}</span>
                             </span>
+                            </div>
+                            <div class="right-status">
+                                <button class="suggestion-action" data-action="{{ \App\Models\Relationship::APPROVED }}" data-suggestion="{{ $suggestion->id }}" >Accept</button>
+                                <button class="suggestion-action" data-action="{{ \App\Models\Relationship::REJECTED }}" data-suggestion="{{ $suggestion->id }}" >Reject</button>
+                            </div>
                         </div>
-                        <div class="right-status">
-                            <span class="kt-badge kt-badge--info kt-badge--inline kt-badge--pill">Pending</span>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
             </div>
 

@@ -4,11 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Relationship;
 use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class UsersController extends Controller
 {
+    private $userService;
+
+    public function __construct(UserService $userService) {
+         $this->userService = $userService;
+    }
 
     /**
      * Users search functionality
@@ -16,17 +21,7 @@ class UsersController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function search(Request $request) {
-        $target = $request->get('term');
-
-        $query = User::query();
-        if(!empty($target)) {
-            $query->whereRaw('LOWER(email) like \'%'. $target .'%\' ')
-                ->orWhereRaw('LOWER(name) like \'%'. $target .'%\' ')
-                ->orWhereRaw('LOWER(surname) like \'%'. $target .'%\' ');
-        }
-        $query->where('id', "!=", Auth::user()->id);
-        $users = $query->get()->all();
-        return response()->json(['results' => $users]);
+        return $this->userService->getUsers($request);
     }
 
     /**
@@ -43,20 +38,34 @@ class UsersController extends Controller
         if(empty($user)) {
             return response()->json(['success' => false, 'message' => 'Invalid arguments are specified']);
         }
-        $relationship = new Relationship();
-        $relationship->sender_id = Auth::user()->id;
-        $relationship->receiver_id = $user->id;
-        $relationship->status = Relationship::PENDING;
+        return $this->userService->createRelation($user);
+    }
+
+    public function unfriend(Request $request) {
+        $user = $request->get('user');
+        if(!is_numeric($user)) {
+            return response()->json(['success' => false, 'message' => 'Invalid arguments are specified']);
+        }
+        $user = User::find($user);
+        if(empty($user)) {
+            return response()->json(['success' => false, 'message' => 'Invalid arguments are specified']);
+        }
+        return $this->userService->removeRelation();
+    }
+
+    public function suggestionRespond(Request $request) {
+        $suggestionId = $request->get('suggestion');
+        $action = $request->get('action');
+
+        // @todo validate request data;
+
+        $relationship = Relationship::find($suggestionId);
+        $relationship->status = $action;
         try {
             $relationship->save();
         } catch (\Exception $exception) {
-            return response()->json(['success' => false, 'message' => "Something went wrong"]);
+            return response()->json(['success' => false, 'message' => 'Failed to change status']);
         }
         return response()->json(['success' => true]);
     }
-
-    public function unfriend() {
-
-    }
-
 }

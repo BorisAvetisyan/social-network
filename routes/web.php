@@ -20,5 +20,6 @@ Route::group(['middleware' => ['auth.basic']], function () {
         Route::get('search', [\App\Http\Controllers\UsersController::class, 'search']);
         Route::post('friend', [\App\Http\Controllers\UsersController::class, 'friend']);
         Route::post('unfriend', [\App\Http\Controllers\UsersController::class, 'unfriend']);
+        Route::post('suggestion/respond', [\App\Http\Controllers\UsersController::class, 'suggestionRespond']);
     });
 });
