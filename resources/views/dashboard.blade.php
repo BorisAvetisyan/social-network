@@ -2,6 +2,7 @@
 @section('title', 'Dashboard')
 
 @section('custom_css')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
 @endsection
 
 @section('content')
@@ -26,8 +27,7 @@
                                 </svg>
                             </span>
                     </div>
-{{--                    <select class="search-people" name="" id=""></select>--}}
-                     <input type="text" class="form-control search-input" placeholder="Search" aria-describedby="basic-addon1">
+                    <select class="search-people form-control search-input" name="" id="search-people"></select>
                 </div>
             </div>
             {{-- End Search Input --}}
@@ -104,7 +104,8 @@
 @endsection
 
 @section('custom_scripts')
-
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+    <script src="{{ asset('custom/js/dashboard.js') }}"></script>
 @endsection
 
 

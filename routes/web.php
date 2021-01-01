@@ -15,4 +15,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['auth.basic']], function () {
     Route::get('/', [\App\Http\Controllers\DashboardController::class, 'index']);
+
+    Route::group(['prefix' => 'users'], function () {
+        Route::get('search', [\App\Http\Controllers\UsersController::class, 'search']);
+        Route::post('friend', [\App\Http\Controllers\UsersController::class, 'friend']);
+        Route::post('unfriend', [\App\Http\Controllers\UsersController::class, 'unfriend']);
+    });
 });
