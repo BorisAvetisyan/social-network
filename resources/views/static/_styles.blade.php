@@ -7,3 +7,4 @@
 <link href="{{ asset('custom/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="{{ asset('custom/css/style.css') }}">
 <link rel="stylesheet" href="{{ asset('lib/perfect-scrollbar/css/perfect-scrollbar.css') }}">
+<link rel="stylesheet" href="{{ asset('lib/font-awesome/css/font-awesome.min.css') }}">

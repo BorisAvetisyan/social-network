@@ -10,6 +10,8 @@ $(document).ready(function () {
     constructUsersList();
     handleDatatableFiltering();
     initializeNotificationsDatatable();
+    handleSentRequest();
+    unfriend();
 })
 
 function handleDatatableFiltering() {
@@ -30,7 +32,7 @@ function initializeNotificationsDatatable() {
         title: 'Actions',
         sortable: false,
         template: function(row) {
-            return `<button class="btn btn-sm btn-clean btn-icon btn-icon-sm suggestion-action" title="Approve" data-action="approved" data-notification="${row.id}" >Approve</button><button data-action="rejected" data-notification="${row.id}" class="btn btn-sm btn-clean btn-icon btn-icon-sm suggestion-action" title="Reject" data-id="' + row.id + '">Reject</button>`
+            return `<button class="btn btn-sm btn-clean btn-icon btn-icon-sm suggestion-action" title="Approve" data-action="approved" data-notification="${row.id}" >Approve</button><button data-action="rejected" data-notification="${row.id}" class="btn btn-sm btn-clean btn-icon btn-icon-sm suggestion-action" title="Reject">Reject</button>`
         }
     });
     notificationsDatatable = initialiseKtDatatable('notifications-datatable', '/users/notifications/data', columns, () => {})
@@ -46,19 +48,25 @@ function constructUsersList() {
         sortable: false,
         template: function(row) {
             if(row.status === 'pending') {
-                // cancel
-                return 'cancel'
+                return `<button class="btn btn-default handle-sent-request" data-status="cancel" data-relationship="${row.id}">Cancel</button>`
             } else if (row.status === 'approved') {
-                // unfriend
-                return 'unfriend'
+                return `<button class="btn btn-default unfriend" data-relationship="${row.id}">Unfriend</button>`
             } else {
-                // retry
-                // cancel
                 return 'retry/cancel'
             }
         }
     });
     usersDatatable = initialiseKtDatatable('users-datatable', '/users/data', columns, () => {}, {}, getAPIParams());
+}
+
+function handleSentRequest() {
+    $(document).on('click', '.handle-sent-request', function () {
+        let relationship = $(this).data('relationship');
+        let action = $(this).data('action');
+        makeAjaxRequest('relationships/cancel', 'post', {relationship: relationship, action: action}, (err, res) => {
+            usersDatatable.reload();
+        })
+    })
 }
 
 function handleNotificationStatusChange() {
@@ -89,6 +97,16 @@ function initializeSelect2() {
     })
 }
 
+function unfriend() {
+    $(document).on('click', '.unfriend', function () {
+        let relationship = $(this).data('relationship');
+        console.log("unfriend")
+        makeAjaxRequest('users/unfriend','post', {relationship: relationship},(err, res) => {
+            usersDatatable.reload();
+        })
+    })
+}
+
 
 function template(row) {
     if (row.loading) {
@@ -99,14 +117,21 @@ function template(row) {
         "<div class='select2-result-repository clearfix'>" +
         "<div class='select2-result-repository__meta'>" +
         "<div class='select2-result-repository__title'></div>" +
-        "<div class='select2-result-repository__forks'> <button class='friend btn btn-success btn-sm' data-user="+row.id+">Friend</button> </div>" +
+        "<div class='select2-result-repository__forks'></div>" +
         "</div>" +
         "</div>" +
         "</div>"
     );
 
+    let html = "<button class='friend btn btn-success btn-sm' data-user="+row.id+">Friend</button>";
+    if(row.status === 'pending') {
+        html = `<button class='btn btn-info btn-sm' disabled="disabled">Pending</button>`;
+    }
+    if(row.status === 'rejected') {
+        html = "<button class='friend btn btn-danger btn-sm' data-status='pending' data-user="+row.id+">Rejected/Resend</button>";
+    }
     container.find(".select2-result-repository__title").text(row.name + " " + row.surname + `(${row.email})`);
-
+    container.find(".select2-result-repository__forks").html(html);
     return container;
 }
 
@@ -114,7 +139,12 @@ function template(row) {
 function friend() {
     $(document).on('click', ".friend", function () {
         let user = $(this).data('user');
-        makeAjaxRequest("users/friend", 'post', {user: user}, (err, res) => {
+        let status = $(this).data('status');
+        let data = {
+            user: user,
+            status: status
+        }
+        makeAjaxRequest("users/friend", 'post', data, (err, res) => {
             if(res.success) {
                 usersDatatable.reload();
                 $(this).attr('disabled', true);

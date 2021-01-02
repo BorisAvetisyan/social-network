@@ -19,12 +19,16 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::group(['prefix' => 'users'], function () {
         Route::get('search', [\App\Http\Controllers\UsersController::class, 'search']);
-        Route::post('friend', [\App\Http\Controllers\UsersController::class, 'friend']);
-        Route::post('unfriend', [\App\Http\Controllers\UsersController::class, 'unfriend']);
+        Route::post('data', [\App\Http\Controllers\UsersController::class, 'data'])->name('users.data');
+
+        Route::post('friend', [\App\Http\Controllers\RelationshipController::class, 'friend']);
+        Route::post('unfriend', [\App\Http\Controllers\RelationshipController::class, 'unfriend']);
+
         Route::post('notification/respond', [\App\Http\Controllers\UsersController::class, 'notificationRespond']);
         Route::post('notifications/data', [\App\Http\Controllers\UsersController::class, 'notifications'])->name('notifications.data');
-        Route::post('data', [\App\Http\Controllers\UsersController::class, 'data'])->name('users.data');
     });
+
+    Route::post('relationships/cancel', [\App\Http\Controllers\RelationshipController::class, 'cancelRequest']);
 });
 
 Auth::routes(['reset' => false]);

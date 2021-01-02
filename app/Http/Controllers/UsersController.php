@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class UsersController extends Controller
 {
@@ -23,35 +24,6 @@ class UsersController extends Controller
      */
     public function search(Request $request) {
         return $this->userService->getUsers($request);
-    }
-
-    /**
-     * Creates new relationship row with corresponding sender and receiver ids.
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function friend(Request $request) {
-        $user = $request->get('user');
-        if(!is_numeric($user)) {
-            return response()->json(['success' => false, 'message' => 'Invalid arguments are specified']);
-        }
-        $user = User::find($user);
-        if(empty($user)) {
-            return response()->json(['success' => false, 'message' => 'Invalid arguments are specified']);
-        }
-        return $this->userService->createRelation($user);
-    }
-
-    public function unfriend(Request $request) {
-        $user = $request->get('user');
-        if(!is_numeric($user)) {
-            return response()->json(['success' => false, 'message' => 'Invalid arguments are specified']);
-        }
-        $user = User::find($user);
-        if(empty($user)) {
-            return response()->json(['success' => false, 'message' => 'Invalid arguments are specified']);
-        }
-        return $this->userService->removeRelation();
     }
 
     public function notificationRespond(Request $request) {
@@ -72,21 +44,23 @@ class UsersController extends Controller
     public function data(Request $request) {
         $status = $request->get('status');
         $target = $request->get('target');
-        $authUserId = Auth::user()->id;
-        // todo search based on target
-        $query = User::query();
-        $query->join('relationships', 'relationships.receiver_id', '=', 'users.id');
-        if($status === Relationship::APPROVED) {
-            $query->join('relationships as rs', 'rs.sender_id', '=', 'users.id');
-            $query->where('rs.status', '=', $status);
-            $query->whereRaw('(rs.sender_id = ? or relationships.receiver_id = ?)', [$authUserId, $authUserId]);
-        } elseif ($status === Relationship::REJECTED) {
-            $query->where('sender_id', '=', $authUserId);
-        } elseif ($status === Relationship::PENDING) {
-            $query->where('sender_id', '=', $authUserId);
-        }
+        $authUserId = Auth::id();
 
-        $query->where('relationships.status', '=', $status);
+
+        $query = User::query();
+        $query->leftJoin('relationships as rs', 'rs.receiver_id', '=', 'users.id');
+        if($status === Relationship::APPROVED) {
+            $query->select(
+                DB::raw('(case when rs.id is not null then rs.id else rs2.id end) as id'),
+                DB::raw('(case when rs.status is not null then rs.status else rs2.status end) as status, users.id as user_id'),
+                'users.name', 'users.email', 'users.surname');
+            $query->leftJoin('relationships as rs2', 'rs2.sender_id', '=', 'users.id');
+            $query->whereRaw("(rs.status = '$status' or rs2.status = '$status')");
+            $query->where('users.id', '!=', $authUserId);
+        } elseif ($status === Relationship::REJECTED || $status === Relationship::PENDING) {
+            $query->where('sender_id', '=', $authUserId);
+            $query->where('relationships.status', '=', $status);
+        }
 
         $data = $query->get()->all();
         return response()->json([
