@@ -20,6 +20,7 @@ mix.copy('node_modules/jquery', 'public/js/jquery')
     .copy('node_modules/popper.js', 'public/lib/popper.js')
     .copy('node_modules/select2', 'public/lib/select2')
     .copy('node_modules/perfect-scrollbar', 'public/lib/perfect-scrollbar')
+    .copy('node_modules/line-awesome', 'public/lib/line-awesome')
     .postCss('resources/css/app.css', 'public/css', [
         //
     ]);

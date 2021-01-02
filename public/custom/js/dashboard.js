@@ -1,14 +1,15 @@
-var usersDatatable;
+var usersDatatable,
+    notificationsDatatable;
 
 $(document).ready(function () {
     $('#kt_form_status').selectpicker();
 
     initializeSelect2();
     friend();
-    handleSuggestionsAction();
+    handleNotificationStatusChange();
     constructUsersList();
     handleDatatableFiltering();
-
+    initializeNotificationsDatatable();
 })
 
 function handleDatatableFiltering() {
@@ -20,83 +21,54 @@ function handleDatatableFiltering() {
     searchEvent('search', usersDatatable, getAPIParams)
 }
 
-function constructUsersList() {
-    let columns = [
-        {
-            color: "#000000",
-            width: 150,
-            field: 'name',
-            title: 'Name',
-            sortable: false,
-            template: function(row) {
-                return row.name;
-            }
-        },
-        {
-            color: "#000000",
-            width: 100,
-            field: 'surname',
-            title: 'Surname',
-            sortable: false,
-            template: function(row) {
-                return row.surname;
-            }
-        },
-        {
-            color: "#000000",
-            width: 100,
-            field: 'email',
-            title: 'Email',
-            sortable: false,
-            template: function(row) {
-                return row.email;
-            }
-        },
-        {
-            color: "#000000",
-            width: 80,
-            field: 'status',
-            title: 'Status',
-            sortable: false,
-            template: function(row) {
-                let classname = {"approved": "success", "rejected": "danger", "pending": "info"}
-                return `<span class="kt-badge kt-badge--${classname[row.status]} kt-badge--inline kt-badge--pill">${row.status}</span>`;
-            }
-        },
-        {
-            color: "#000000",
-            width: 100,
-            field: 'action',
-            title: 'Actions',
-            sortable: false,
-            template: function(row) {
-                if(row.status === 'pending') {
-                    // cancel
-                    return 'cancel'
-                } else if (row.status === 'approved') {
-                    // unfriend
-                    return 'unfriend'
-                } else {
-                    // retry
-                    // cancel
-                    return 'retry/cancel'
-                }
-            }
-        },
-    ];
-    usersDatatable = initialiseKtDatatable('users-datatable', '/users/data', columns, () => {
-
-    }, {}, getAPIParams());
+function initializeNotificationsDatatable() {
+    let columns = getColumns();
+    columns.push({
+        color: "#000000",
+        width: 200,
+        field: 'action',
+        title: 'Actions',
+        sortable: false,
+        template: function(row) {
+            return `<button class="btn btn-sm btn-clean btn-icon btn-icon-sm suggestion-action" title="Approve" data-action="approved" data-notification="${row.id}" >Approve</button><button data-action="rejected" data-notification="${row.id}" class="btn btn-sm btn-clean btn-icon btn-icon-sm suggestion-action" title="Reject" data-id="' + row.id + '">Reject</button>`
+        }
+    });
+    notificationsDatatable = initialiseKtDatatable('notifications-datatable', '/users/notifications/data', columns, () => {})
 }
 
-function handleSuggestionsAction() {
-    $(".suggestion-action").click(function () {
-        let action = $(this).data("action");
-        let suggestion = $(this).data('suggestion');
+function constructUsersList() {
+    let columns = getColumns();
+    columns.push({
+        color: "#000000",
+        width: 100,
+        field: 'action',
+        title: 'Actions',
+        sortable: false,
+        template: function(row) {
+            if(row.status === 'pending') {
+                // cancel
+                return 'cancel'
+            } else if (row.status === 'approved') {
+                // unfriend
+                return 'unfriend'
+            } else {
+                // retry
+                // cancel
+                return 'retry/cancel'
+            }
+        }
+    });
+    usersDatatable = initialiseKtDatatable('users-datatable', '/users/data', columns, () => {}, {}, getAPIParams());
+}
 
-        makeAjaxRequest('users/suggestion/respond','post', {suggestion: suggestion, action: action}, (err, res) => {
-            let className = action === 'approved' ? "success" : "danger";
-            $(this).closest('.right-status').html(`<span class="kt-badge kt-badge--${className} kt-badge--inline kt-badge--pill">${action}</span>`)
+function handleNotificationStatusChange() {
+    $(document).on('click', ".suggestion-action", function () {
+        let action = $(this).data("action");
+        let notification = $(this).data('notification');
+
+        makeAjaxRequest('users/notification/respond','post', {notification: notification, action: action}, (err, res) => {
+            console.log(res);
+            notificationsDatatable.reload();
         })
     })
 }
@@ -157,4 +129,50 @@ function getAPIParams() {
         target: $("#search").val(),
         status: $("#kt_form_status").val(),
     }
+}
+
+function getColumns() {
+    return [
+        {
+            color: "#000000",
+            width: 100,
+            field: 'name',
+            title: 'Name',
+            sortable: false,
+            template: function(row) {
+                return row.name;
+            }
+        },
+        {
+            color: "#000000",
+            width: 100,
+            field: 'surname',
+            title: 'Surname',
+            sortable: false,
+            template: function(row) {
+                return row.surname;
+            }
+        },
+        {
+            color: "#000000",
+            width: 100,
+            field: 'email',
+            title: 'Email',
+            sortable: false,
+            template: function(row) {
+                return row.email;
+            }
+        },
+        {
+            color: "#000000",
+            width: 70,
+            field: 'status',
+            title: 'Status',
+            sortable: false,
+            template: function(row) {
+                let classname = {"approved": "success", "rejected": "danger", "pending": "info"}
+                return `<span class="kt-badge kt-badge--${classname[row.status]} kt-badge--inline kt-badge--pill">${row.status}</span>`;
+            }
+        }
+    ];
 }

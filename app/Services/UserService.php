@@ -6,6 +6,7 @@ use App\Models\Relationship;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserService {
 
@@ -58,5 +59,15 @@ class UserService {
     public function getRequestedList() {
 
         return response()->json([]);
+    }
+
+    public function createUser(Request $request) {
+        $user = new User();
+        $user->name = $request->get('name');
+        $user->email = $request->get('email');
+        $user->surname = $request->get('surname');
+        $user->password = Hash::make($request->get('password'));
+        $user->save();
+        return $user;
     }
 }

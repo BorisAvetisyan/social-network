@@ -30250,7 +30250,7 @@ body {
     left: 70px;
     transition: all 0.3s ease; }
   .kt-container {
-    padding: 0 25px; }
+    padding: 0 25px 0 0; }
   .kt-subheader--enabled:not(.kt-subheader--fixed) .kt-content {
     padding-top: 0; } }
 
@@ -32292,7 +32292,7 @@ body {
 
 @media (min-width: 1025px) {
   .kt-content {
-    padding: 95px 0; }
+    padding: 25px 0; }
     .kt-content.kt-content--fit-top {
       padding-top: 0; }
     .kt-content.kt-content--fit-bottom {
@@ -32318,7 +32318,7 @@ body {
     justify-content: space-between; }
   .kt-footer .kt-footer__copyright {
     display: flex;
-    margin: 0;
+    margin: 0 0 0 25px;
     padding: 0 1.25rem 0 0;
     font-size: 1rem;
     font-weight: 400;

@@ -54,11 +54,9 @@ class UsersController extends Controller
         return $this->userService->removeRelation();
     }
 
-    public function suggestionRespond(Request $request) {
-        $suggestionId = $request->get('suggestion');
+    public function notificationRespond(Request $request) {
+        $suggestionId = $request->get('notification');
         $action = $request->get('action');
-
-        // @todo validate request data;
 
         $relationship = Relationship::find($suggestionId);
         $relationship->status = $action;
@@ -75,7 +73,7 @@ class UsersController extends Controller
         $status = $request->get('status');
         $target = $request->get('target');
         $authUserId = Auth::user()->id;
-
+        // todo search based on target
         $query = User::query();
         $query->join('relationships', 'relationships.receiver_id', '=', 'users.id');
         if($status === Relationship::APPROVED) {
@@ -97,6 +95,32 @@ class UsersController extends Controller
         ]);
     }
 
+    /**
+     * Returns all notifications where receiver is the authenticated user and the status is "pending"
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function notifications(Request $request) {
+        $query = User::query();
+        $query->select('relationships.id', 'users.name', 'users.email', 'users.surname', 'relationships.status');
+        $query->join('relationships', 'relationships.receiver_id', '=', 'users.id');
+        $query->where('relationships.receiver_id','=', user()->id);
+
+        $query->where('relationships.status', '=', Relationship::PENDING);
+
+        $data = $query->get()->all();
+        return response()->json([
+            'meta' => $this->getMetaInformation($request->get('pagination', []), count($data)),
+            'data' => $data
+        ]);
+    }
+
+    /**
+     * Returns meta information for datatable in client side
+     * @param $pagination
+     * @param $dataCount
+     * @return array
+     */
     public function getMetaInformation($pagination, $dataCount) {
         return array(
             'page' => $pagination['page'],
