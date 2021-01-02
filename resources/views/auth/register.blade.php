@@ -1,6 +1,6 @@
 @extends('layouts.auth')
 @section('text', "Sign In")
-@section('url', route('login.index'))
+@section('url', route('login'))
 
 @section('custom_styles')
     <link rel="stylesheet" href="{{ asset('custom/css/auth.css') }}">

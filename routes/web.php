@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['middleware' => ['auth.basic']], function () {
+Route::group(['middleware' => ['auth']], function () {
     Route::get('/', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
     Route::group(['prefix' => 'users'], function () {
@@ -26,7 +27,4 @@ Route::group(['middleware' => ['auth.basic']], function () {
     });
 });
 
-Route::get('login', [\App\Http\Controllers\LoginController::class, 'index'])->name('login.index');
-Route::post('login', [\App\Http\Controllers\LoginController::class, 'login'])->name('login');
-Route::get('register', [\App\Http\Controllers\RegisterController::class, 'index'])->name('register.index');
-Route::post('register', [\App\Http\Controllers\RegisterController::class, 'register'])->name('register');
+Auth::routes(['reset' => false]);
