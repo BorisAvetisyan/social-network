@@ -81,6 +81,7 @@ function handleNotificationStatusChange() {
         let notification = $(this).data('notification');
 
         makeAjaxRequest('users/notification/respond','post', {notification: notification, action: action}, (err, res) => {
+            usersDatatable.reload();
             notificationsDatatable.reload();
         })
     })
@@ -183,6 +184,9 @@ function getColumns() {
             title: 'Name',
             sortable: false,
             template: function(row) {
+                if(row.status === 'approved') {
+                    return `<a href="${url}/users/profile/${row.user_id}">${row.name}</a>`
+                }
                 return row.name;
             }
         },

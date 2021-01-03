@@ -10,7 +10,7 @@ class Relationship extends Model
     use HasFactory;
     protected $guarded = ['id'];
     protected $table = 'relationships';
-    public $timestamps = false;
+    public $timestamps = true;
 
     const PENDING = 'pending';
     const APPROVED = 'approved';

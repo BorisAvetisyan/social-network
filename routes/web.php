@@ -26,8 +26,10 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::post('notification/respond', [\App\Http\Controllers\UsersController::class, 'notificationRespond']);
         Route::post('notifications/data', [\App\Http\Controllers\UsersController::class, 'notifications'])->name('notifications.data');
+        Route::get('profile/{id}', [\App\Http\Controllers\ProfileController::class, 'index']);
     });
 
+    Route::post('user/post', [\App\Http\Controllers\PostsController::class, 'post']);
     Route::post('relationships/cancel', [\App\Http\Controllers\RelationshipController::class, 'cancelRequest']);
 });
 

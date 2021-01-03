@@ -12,4 +12,14 @@ class User extends Authenticatable
 
     protected $guarded = ['id'];
     public $timestamps = true;
+
+
+    public function madePosts() {
+        return $this->hasMany(Post::class, 'sender_id');
+    }
+
+    public function receivedPosts() {
+        return $this->hasMany(Post::class, 'receiver_id');
+    }
+
 }
