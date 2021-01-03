@@ -25,14 +25,15 @@ class UserService {
      */
     public function getAllUsers(Request $request) {
         $query = User::query();
-        $target = $request->get('term');
+        $target = strtolower($request->get('term', ''));
 
-        $this->makeUserSearchCriteria($target, $query);
         $query->select('users.id', 'users.name', 'users.surname', 'users.email', DB::raw("(case when rs.status is not null then rs.status else rs2.status end) as status"));
 
         $query->leftJoin('relationships as rs', 'rs.sender_id', '=', 'users.id');
         $query->leftJoin('relationships as rs2', 'rs2.receiver_id', '=', 'users.id');
+
         $query->where('users.id', '!=', Auth::id());
+        $this->makeUserSearchCriteria($target, $query);
 
         $query->limit(self::USERS_MAXIMUM_COUNT);
 
@@ -128,9 +129,10 @@ class UserService {
      */
     public function makeUserSearchCriteria($target, $query) {
         if(!empty($target)) {
-            $query->whereRaw('LOWER(users.email) like \'%'. $target .'%\' ')
-                ->orWhereRaw('LOWER(users.name) like \'%'. $target .'%\' ')
-                ->orWhereRaw('LOWER(users.surname) like \'%'. $target .'%\' ');
+            $query->whereRaw('(LOWER(users.email) like \'%'. $target .'%\' or
+                               LOWER(users.name) like \'%'. $target .'%\' or
+                               LOWER(users.surname) like \'%'. $target .'%\'
+                    )');
         }
     }
 }

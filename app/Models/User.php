@@ -22,4 +22,14 @@ class User extends Authenticatable
         return $this->hasMany(Post::class, 'receiver_id');
     }
 
+    /**
+     * Check if user given with the argument is friend of the authenticated user or not
+     * @param $user
+     * @return bool
+     */
+    public function isFriend($user) {
+        return !empty(Relationship::whereRaw("(receiver_id = $this->id and sender_id = $user->id) or (sender_id = $this->id and receiver_id = $user->id)")
+            ->withApprovedStatus()
+            ->first());
+    }
 }

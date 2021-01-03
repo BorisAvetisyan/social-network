@@ -1,0 +1,15 @@
+textarea {
+    height: 50px;
+}
+
+.kt-chat .kt-chat-input .kt-chat__editor textarea {
+    width: 100%;
+    border: 0 !important;
+    outline: none !important;
+    background-color: transparent !important;
+    color: #a2a5b9;
+}
+
+.kt_chat__actions button {
+    float: right;
+}

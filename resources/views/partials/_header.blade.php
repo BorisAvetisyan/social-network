@@ -1,7 +1,7 @@
 <div id="kt_header" class="kt-header kt-grid__item  kt-header--fixed " kt-hidden-height="65" style="">
     <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper">
         <div id="kt_header_menu" class="kt-header-menu kt-header-menu-mobile  kt-header-menu--layout-default">
-            SNet
+            <a href="{{ route("dashboard") }}">SNet</a>
         </div>
     </div>
     <!-- end:: Header Menu -->

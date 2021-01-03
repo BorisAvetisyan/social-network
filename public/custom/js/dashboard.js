@@ -33,7 +33,7 @@ function initializeNotificationsDatatable() {
         title: 'Actions',
         sortable: false,
         template: function(row) {
-            return `<button class="btn btn-sm btn-clean btn-icon btn-icon-sm suggestion-action" title="Approve" data-action="approved" data-notification="${row.id}" >Approve</button><button data-action="rejected" data-notification="${row.id}" class="btn btn-sm btn-clean btn-icon btn-icon-sm suggestion-action" title="Reject">Reject</button>`
+            return `<button class="btn btn-sm btn-clean suggestion-action" title="Approve" data-action="approved" data-notification="${row.id}" >Approve</button><button data-action="rejected" data-notification="${row.id}" class="btn btn-sm btn-clean suggestion-action" title="Reject">Reject</button>`
         }
     });
     notificationsDatatable = initialiseKtDatatable('notifications-datatable', '/users/notifications/data', columns, () => {})
@@ -56,7 +56,7 @@ function constructUsersList() {
             } else if (row.status === 'approved') {
                 return `<button class="btn btn-default unfriend" data-relationship="${row.id}">Unfriend</button>`
             } else {
-                return 'retry/cancel'
+                return ''
             }
         }
     });
@@ -99,7 +99,13 @@ function initializeSelect2() {
         minimumInputLength: 2,
         placeholder: "Find People",
         closeOnSelect: false,
-        templateResult: template
+        templateResult: template,
+        cache: false
+    })
+
+    $("#search-people").on('select2:select', function () {
+        $("#search-people").val('')
+        $("#search-people").placeholder('Find People')
     })
 }
 
@@ -157,6 +163,7 @@ function friend() {
         makeAjaxRequest("users/friend", 'post', data, (err, res) => {
             if(res.success) {
                 usersDatatable.reload();
+                $(this).text("Pending")
                 $(this).attr('disabled', true);
             }
         })

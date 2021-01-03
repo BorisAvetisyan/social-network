@@ -1,6 +1,10 @@
 @extends('layouts.index')
 @section('title', "Profile")
 
+@section('custom_css')
+    <link rel="stylesheet" href="{{ asset('custom/css/profile.css') }}">
+@endsection
+
 @section('content')
     <!--Begin:: App Content-->
     <div class="kt-grid__item kt-grid__item--fluid kt-app__content" id="kt_chat_content">
@@ -16,7 +20,7 @@
                         </div>
                         <div class="kt-chat__center">
                             <div class="kt-chat__label">
-                                <a href="#" class="kt-chat__title">Jason Muller</a>
+                                <a href="#" class="kt-chat__title">{{ $user->name . ' ' . $user->surname }}</a>
                                 <span class="kt-chat__status">
 																<span class="kt-badge kt-badge--dot kt-badge--success"></span> Active
 															</span>
@@ -59,7 +63,7 @@
                     </div>
                 </div>
                 <div class="kt-portlet__foot">
-                    <div class="kt-chat__input">
+                    <div class="kt-chat-input">
                         <div class="kt-chat__editor">
                             <textarea style="height: 50px" placeholder="Type here..."></textarea>
                         </div>
@@ -70,7 +74,7 @@
                                 <a href="#"><i class="flaticon2-photo-camera"></i></a>
                             </div>
                             <div class="kt_chat__actions">
-                                <button type="button" class="btn btn-brand btn-md btn-upper btn-bold kt-chat__reply post" data-target-user="{{ $user->id }}">Post</button>
+                                <button type="button" class="btn btn-brand btn-md btn-upper btn-bold post" data-target-user="{{ $user->id }}">Post</button>
                             </div>
                         </div>
                     </div>

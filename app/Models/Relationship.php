@@ -16,4 +16,7 @@ class Relationship extends Model
     const APPROVED = 'approved';
     const REJECTED = 'rejected';
 
+    public function scopeWithApprovedStatus($query) {
+        $query->where('status', self::APPROVED);
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Utils;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -17,9 +18,12 @@ class PostsController extends Controller
      */
     public function post(Request $request) {
         $userid = $request->get('user');
-        // validate if they are friends or not
         $user = User::find($userid);
         $authId = Auth::id();
+
+        if(!Auth::user()->isFriend($user)) {
+            Utils::returnUnauthorizedResponse();
+        }
 
         $post = new Post();
         $post->sender_id = $authId;
