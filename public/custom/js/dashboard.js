@@ -3,7 +3,6 @@ var usersDatatable,
 
 $(document).ready(function () {
     $('#kt_form_status').selectpicker();
-
     initializeSelect2();
     friend();
     handleNotificationStatusChange();
@@ -14,6 +13,7 @@ $(document).ready(function () {
     unfriend();
 })
 
+/** Reload datatable based on the selected values(selectbox/searchbox)  **/
 function handleDatatableFiltering() {
     $('#kt_form_status').on('change', function() {
         usersDatatable.API.params = getAPIParams();
@@ -23,6 +23,7 @@ function handleDatatableFiltering() {
     searchEvent('search', usersDatatable, getAPIParams)
 }
 
+/** Construct datatable which displays received requests from the users */
 function initializeNotificationsDatatable() {
     let columns = getColumns();
     columns.push({
@@ -38,6 +39,9 @@ function initializeNotificationsDatatable() {
     notificationsDatatable = initialiseKtDatatable('notifications-datatable', '/users/notifications/data', columns, () => {})
 }
 
+/**
+ * Constructs users list with the capability to unfriend or cancel already sent request.
+ */
 function constructUsersList() {
     let columns = getColumns();
     columns.push({
@@ -59,6 +63,7 @@ function constructUsersList() {
     usersDatatable = initialiseKtDatatable('users-datatable', '/users/data', columns, () => {}, {}, getAPIParams());
 }
 
+/*** Cancel already sent request  */
 function handleSentRequest() {
     $(document).on('click', '.handle-sent-request', function () {
         let relationship = $(this).data('relationship');
@@ -69,13 +74,13 @@ function handleSentRequest() {
     })
 }
 
+/** Approve or Reject received notification from the user  */
 function handleNotificationStatusChange() {
     $(document).on('click', ".suggestion-action", function () {
         let action = $(this).data("action");
         let notification = $(this).data('notification');
 
         makeAjaxRequest('users/notification/respond','post', {notification: notification, action: action}, (err, res) => {
-            console.log(res);
             notificationsDatatable.reload();
         })
     })
@@ -107,7 +112,11 @@ function unfriend() {
     })
 }
 
-
+/**
+ * HTML Template which is being constructed before drawing the data via select2 library
+ * @param row
+ * @returns {*|jQuery|HTMLElement}
+ */
 function template(row) {
     if (row.loading) {
         return row.text;
@@ -161,6 +170,10 @@ function getAPIParams() {
     }
 }
 
+/**
+ * Columns used to draw datatables in the dashboard
+ * @returns {({template: (function(*): *), color: string, field: string, width: number, sortable: boolean, title: string}|{template: (function(*): *), color: string, field: string, width: number, sortable: boolean, title: string}|{template: (function(*): *), color: string, field: string, width: number, sortable: boolean, title: string}|{template: (function(*): string), color: string, field: string, width: number, sortable: boolean, title: string})[]}
+ */
 function getColumns() {
     return [
         {

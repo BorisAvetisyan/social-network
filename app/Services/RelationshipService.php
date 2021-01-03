@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * This service is responsible for relationship related changes
+ */
+
 namespace App\Services;
 
 use App\Models\Relationship;
@@ -22,6 +26,12 @@ class RelationshipService {
         return $relationship;
     }
 
+    /**
+     * Updates relationship data
+     * @param User $user
+     * @param $status
+     * @return mixed
+     */
     public function update(User $user, $status) {
         $authId = Auth::id();
         $userId = $user->id;

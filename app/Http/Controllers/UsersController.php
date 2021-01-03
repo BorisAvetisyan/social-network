@@ -6,13 +6,15 @@ use App\Models\Relationship;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class UsersController extends Controller
 {
     private $userService;
 
+    /**
+     * UsersController constructor.
+     * @param UserService $userService
+     */
     public function __construct(UserService $userService) {
          $this->userService = $userService;
     }
@@ -23,7 +25,7 @@ class UsersController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function search(Request $request) {
-        return $this->userService->getUsers($request);
+        return $this->userService->getAllUsers($request);
     }
 
     public function notificationRespond(Request $request) {
@@ -41,32 +43,13 @@ class UsersController extends Controller
     }
 
 
+    /**
+     * Returns users data with filtered condition friends/approved/rejected
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function data(Request $request) {
-        $status = $request->get('status');
-        $target = $request->get('target');
-        $authUserId = Auth::id();
-
-
-        $query = User::query();
-        $query->leftJoin('relationships as rs', 'rs.receiver_id', '=', 'users.id');
-        if($status === Relationship::APPROVED) {
-            $query->select(
-                DB::raw('(case when rs.id is not null then rs.id else rs2.id end) as id'),
-                DB::raw('(case when rs.status is not null then rs.status else rs2.status end) as status, users.id as user_id'),
-                'users.name', 'users.email', 'users.surname');
-            $query->leftJoin('relationships as rs2', 'rs2.sender_id', '=', 'users.id');
-            $query->whereRaw("(rs.status = '$status' or rs2.status = '$status')");
-            $query->where('users.id', '!=', $authUserId);
-        } elseif ($status === Relationship::REJECTED || $status === Relationship::PENDING) {
-            $query->where('sender_id', '=', $authUserId);
-            $query->where('relationships.status', '=', $status);
-        }
-
-        $data = $query->get()->all();
-        return response()->json([
-            'meta' => $this->getMetaInformation($request->get('pagination', []), count($data)),
-            'data' => $data
-        ]);
+        return $this->userService->getUsers($request);
     }
 
     /**
@@ -82,25 +65,12 @@ class UsersController extends Controller
 
         $query->where('relationships.status', '=', Relationship::PENDING);
 
+        $this->userService->applyPaginationCondition($request, $query);
+
         $data = $query->get()->all();
         return response()->json([
-            'meta' => $this->getMetaInformation($request->get('pagination', []), count($data)),
+            'meta' => $this->userService->getMetaInformation($request->get('pagination', []), count($data)),
             'data' => $data
         ]);
-    }
-
-    /**
-     * Returns meta information for datatable in client side
-     * @param $pagination
-     * @param $dataCount
-     * @return array
-     */
-    public function getMetaInformation($pagination, $dataCount) {
-        return array(
-            'page' => $pagination['page'],
-            'pages' => ceil($dataCount / $pagination['perpage']),
-            'perpage' => $pagination['perpage'],
-            'total' => $dataCount
-        );
     }
 }
