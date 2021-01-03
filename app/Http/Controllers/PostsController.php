@@ -14,7 +14,7 @@ class PostsController extends Controller
     /**
      * Creates new post
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
     public function post(Request $request) {
         $userid = $request->get('user');
@@ -22,7 +22,7 @@ class PostsController extends Controller
         $authId = Auth::id();
 
         if(!Auth::user()->isFriend($user)) {
-            Utils::returnUnauthorizedResponse();
+            return Utils::returnUnauthorizedResponse();
         }
 
         $post = new Post();

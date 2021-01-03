@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Utils;
 use App\Models\Relationship;
 use App\Models\User;
 use App\Services\RelationshipService;
@@ -19,8 +20,7 @@ class RelationshipController extends Controller
     public function cancelRequest(Request $request) {
         $relationship = Relationship::find($request->get('relationship'));
         if($relationship->sender_id != Auth::id()) {
-            // @todo
-            abort(404);
+            return Utils::returnUnauthorizedResponse();
         }
         $relationship->delete();
         return response()->json(['success' => true]);
@@ -70,5 +70,22 @@ class RelationshipController extends Controller
     }
 
 
+    /**
+     * Handle received friend requests. approve/reject
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function notificationRespond(Request $request) {
+        $suggestionId = $request->get('notification');
+        $action = $request->get('action');
 
+        $relationship = Relationship::find($suggestionId);
+        $relationship->status = $action;
+        try {
+            $relationship->save();
+        } catch (\Exception $exception) {
+            return response()->json(['success' => false, 'message' => 'Failed to change status']);
+        }
+        return response()->json(['success' => true]);
+    }
 }

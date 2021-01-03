@@ -66,6 +66,7 @@ function constructUsersList() {
 /*** Cancel already sent request  */
 function handleSentRequest() {
     $(document).on('click', '.handle-sent-request', function () {
+        $(this).prop('disabled', true);
         let relationship = $(this).data('relationship');
         let action = $(this).data('action');
         makeAjaxRequest('relationships/cancel', 'post', {relationship: relationship, action: action}, (err, res) => {
@@ -90,7 +91,8 @@ function handleNotificationStatusChange() {
 
 /** Select2 library invokation based ajax approach */
 function initializeSelect2() {
-    $("#search-people").select2({
+    let searchEl = $("#search-people");
+    $(searchEl).select2({
         ajax: {
             url: url + '/users/search',
             dataType: 'json',
@@ -103,16 +105,16 @@ function initializeSelect2() {
         cache: false
     })
 
-    $("#search-people").on('select2:select', function () {
-        $("#search-people").val('')
-        $("#search-people").placeholder('Find People')
+    $(searchEl).on('select2:select', function () {
+        $(searchEl).val('')
+        $(searchEl).attr('placeholder', 'Find People')
     })
 }
 
 function unfriend() {
     $(document).on('click', '.unfriend', function () {
         let relationship = $(this).data('relationship');
-        console.log("unfriend")
+        $(this).prop('disabled', true);
         makeAjaxRequest('users/unfriend','post', {relationship: relationship},(err, res) => {
             usersDatatable.reload();
         })

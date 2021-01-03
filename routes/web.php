@@ -24,7 +24,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('friend', [\App\Http\Controllers\RelationshipController::class, 'friend']);
         Route::post('unfriend', [\App\Http\Controllers\RelationshipController::class, 'unfriend']);
 
-        Route::post('notification/respond', [\App\Http\Controllers\UsersController::class, 'notificationRespond']);
+        Route::post('notification/respond', [\App\Http\Controllers\RelationshipController::class, 'notificationRespond']);
         Route::post('notifications/data', [\App\Http\Controllers\UsersController::class, 'notifications'])->name('notifications.data');
         Route::get('profile/{id}', [\App\Http\Controllers\ProfileController::class, 'index']);
     });

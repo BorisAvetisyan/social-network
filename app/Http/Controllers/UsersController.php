@@ -28,20 +28,6 @@ class UsersController extends Controller
         return $this->userService->getAllUsers($request);
     }
 
-    public function notificationRespond(Request $request) {
-        $suggestionId = $request->get('notification');
-        $action = $request->get('action');
-
-        $relationship = Relationship::find($suggestionId);
-        $relationship->status = $action;
-        try {
-            $relationship->save();
-        } catch (\Exception $exception) {
-            return response()->json(['success' => false, 'message' => 'Failed to change status']);
-        }
-        return response()->json(['success' => true]);
-    }
-
 
     /**
      * Returns users data with filtered condition friends/approved/rejected
