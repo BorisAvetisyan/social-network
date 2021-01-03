@@ -3,15 +3,11 @@
 
 <!-- begin::Head -->
 <head>
-    @if(env('APP_ENV') === 'prod')
-        @include('static._analytics_head')
-    @endif
     <meta charset="utf-8"/>
     <title>@yield('title') - Social Network</title>
     <meta name="description" content="SNet" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="shortcut icon" href="{{ asset('media/logos/favicon.ico') }}" />
     @include('static._styles')
     @yield('custom_css')
 </head>
