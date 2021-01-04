@@ -33,3 +33,4 @@
 
 <script src="{{ asset('lib/bootstrap/dist/js/bootstrap.js') }}"></script>
 <script src="{{ asset('custom/js/scripts.bundle.js') }}"></script>
+<script src="{{ asset('lib/sweetalert2/dist/sweetalert2.all.min.js') }}"></script>

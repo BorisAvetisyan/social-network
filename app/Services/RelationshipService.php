@@ -8,6 +8,7 @@ namespace App\Services;
 
 use App\Models\Relationship;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class RelationshipService {
@@ -17,7 +18,7 @@ class RelationshipService {
      * @param User $user
      * @return Relationship
      */
-    public function create(User $user) {
+    private function create(User $user) {
         $relationship = new Relationship();
         $relationship->sender_id = Auth::id();
         $relationship->receiver_id = $user->id;
@@ -26,20 +27,34 @@ class RelationshipService {
         return $relationship;
     }
 
-    /**
-     * Updates relationship data
-     * @param User $user
-     * @param $status
-     * @return mixed
-     */
-    public function update(User $user, $status) {
-        $authId = Auth::id();
+    public function createOrUpdate(User $user) {
         $userId = $user->id;
-        $relationship = Relationship::whereRaw("(receiver_id = $authId and sender_id = $userId) or (receiver_id = $userId and sender_id = $authId)")->first();
-        if(!empty($relationship)) {
-            $relationship->status = $status;
-            $relationship->save();
+
+        $sentRelationship = Relationship::where("sender_id", Auth::id())->where("receiver_id", $userId)->first();
+        if(!empty($sentRelationship)) {
+            return $this->sentRelationshipResponse($sentRelationship);
         }
-        return $relationship;
+
+        $receivedRelationship = Relationship::where("receiver_id", Auth::id())->where("sender_id", $userId)->first();
+        if(!empty($receivedRelationship)) {
+            if($receivedRelationship->status == Relationship::APPROVED) {
+                return response()->json(['success' => true, 'message' => 'This user is already in your friends list']);
+            }
+            return response()->json(['success' => true, 'message' => 'You already have notification from this user']);
+        }
+
+        $this->create($user);
+        return response()->json(['success' => true]);
+    }
+
+    private function sentRelationshipResponse($sentRelationship) {
+        if($sentRelationship->status == Relationship::REJECTED) {
+            $sentRelationship->status = Relationship::PENDING;
+            $sentRelationship->save();
+        }
+        if($sentRelationship->status == Relationship::APPROVED) {
+            return response()->json(['success' => true, 'message' => 'This user is already in your friends list']);
+        }
+        return response()->json(['success' => true, 'message' => 'You have already sent friend request to this user']);
     }
 }

@@ -12791,7 +12791,8 @@ code {
   width: 1.9rem; }
   .select2-container--default .select2-selection--single .select2-selection__arrow:before,
   .select2-container--default .select2-selection--multiple .select2-selection__arrow:before {
-    content: ""; }
+    /*content: ""; */
+  }
   .select2-container--default .select2-selection--single .select2-selection__arrow b,
   .select2-container--default .select2-selection--multiple .select2-selection__arrow b {
     /*display: none; */

@@ -54,7 +54,7 @@ function constructUsersList() {
             if(row.status === 'pending') {
                 return `<button class="btn btn-default handle-sent-request" data-status="cancel" data-relationship="${row.id}">Cancel</button>`
             } else if (row.status === 'approved') {
-                return `<button class="btn btn-default unfriend" data-relationship="${row.id}">Unfriend</button>`
+                return `<button class="btn btn-default unfriend btn-sm" data-relationship="${row.id}">Unfriend</button>`
             } else {
                 return ''
             }
@@ -142,15 +142,6 @@ function template(row) {
     );
 
     let html = "<button class='friend btn btn-success btn-sm' data-user="+row.id+">Friend</button>";
-    if(row.status === 'pending') {
-        html = `<button class='btn btn-info btn-sm' disabled="disabled">Pending</button>`;
-    }
-    if(row.status === 'rejected') {
-        html = "<button class='friend btn btn-danger btn-sm' data-status='pending' data-user="+row.id+">Rejected/Resend</button>";
-    }
-    if(row.status === 'approved') {
-        html = "";
-    }
 
     container.find(".select2-result-repository__title").text(row.name + " " + row.surname + `(${row.email})`);
     container.find(".select2-result-repository__forks").html(html);
@@ -166,11 +157,15 @@ function friend() {
             user: user,
             status: status
         }
+        fireLoading();
         makeAjaxRequest("users/friend", 'post', data, (err, res) => {
             if(res.success) {
+                fireSuccess(res.message || "Friend request has been successfully sent", "Note!");
                 usersDatatable.reload();
                 $(this).text("Pending")
                 $(this).attr('disabled', true);
+            } else {
+                fireError();
             }
         })
     })

@@ -26,6 +26,19 @@ function makeAjaxRequest(endpoint, method, data, callback, additionalOptions = {
     $.ajax(settings);
 }
 
+/**
+ * Creates AJAX based Datatable which is being generated based on the given arguments
+ * @param elementId
+ * @param url
+ * @param columns
+ * @param callback
+ * @param additionalOptions
+ * @param additionalData
+ * @param map
+ * @param pageSize
+ * @param params
+ * @returns {jQuery}
+ */
 function initialiseKtDatatable(elementId, url, columns, callback, additionalOptions = {}, additionalData = {}, map = null, pageSize = 50, params= {}) {
     let dataTableOptions = {
         data: {
@@ -109,5 +122,53 @@ function searchEvent(elementId, datatable, getDataFunction) {
             datatable.API.params = getDataFunction();
             datatable.reload();
         }, 300));
+    });
+}
+
+
+/**
+ * Fires Loading
+ * @param text
+ */
+function fireLoading(text) {
+    SweetAlert.fire({
+        title: '',
+        text: text ? text : $('.hidden-inputs').data('please-wait'),
+        onOpen: function () {
+            SweetAlert.showLoading();
+        },
+        allowOutsideClick: false
+    });
+}
+
+/**
+ * Alerts Success
+ * @param text
+ * @param title
+ * @returns {*}
+ */
+function fireSuccess(text, title = '') {
+    return SweetAlert.fire({
+        "title": title,
+        "text": text,
+        "confirmButtonText": "OK",
+        "type": "success",
+        "confirmButtonClass": "btn btn-secondary"
+    });
+}
+
+
+/**
+ * Displays error message with popup
+ * @returns {*}
+ */
+function fireError() {
+    return SweetAlert.fire({
+        title: "Failed",
+        text: "Something went wrong. Please try again later",
+        type: "error",
+        buttonsStyling: false,
+        confirmButtonText: 'Close',
+        confirmButtonClass: "btn btn-brand"
     });
 }

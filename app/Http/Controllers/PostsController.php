@@ -28,7 +28,7 @@ class PostsController extends Controller
         $post = new Post();
         $post->sender_id = $authId;
         $post->receiver_id = $user->id;
-        $post->value = $request->get('value');
+        $post->value = htmlspecialchars($request->get('value'));
         $post->save();
         return response()->json(['success' => true]);
     }

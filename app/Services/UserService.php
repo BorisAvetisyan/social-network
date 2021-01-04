@@ -27,10 +27,7 @@ class UserService {
         $query = User::query();
         $target = strtolower($request->get('term', ''));
 
-        $query->select('users.id', 'users.name', 'users.surname', 'users.email', DB::raw("(case when rs.status is not null then rs.status else rs2.status end) as status"));
-
-        $query->leftJoin('relationships as rs', 'rs.sender_id', '=', 'users.id');
-        $query->leftJoin('relationships as rs2', 'rs2.receiver_id', '=', 'users.id');
+        $query->select('users.id', 'users.name', 'users.surname', 'users.email');
 
         $query->where('users.id', '!=', Auth::id());
         $this->makeUserSearchCriteria($target, $query);

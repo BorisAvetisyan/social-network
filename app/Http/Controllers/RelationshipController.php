@@ -34,7 +34,6 @@ class RelationshipController extends Controller
      */
     public function friend(Request $request) {
         $user = $request->get('user');
-        $status = $request->get('status');
 
         if(!is_numeric($user)) {
             return response()->json(['success' => false, 'message' => 'Invalid arguments are specified']);
@@ -43,12 +42,7 @@ class RelationshipController extends Controller
         if(empty($user)) {
             return response()->json(['success' => false, 'message' => 'Invalid arguments are specified']);
         }
-        if(!empty($status)) {
-            $this->relationshipService->update($user, $status);
-        } else {
-            $this->relationshipService->create($user);
-        }
-        return response()->json(['success' => true]);
+        return $this->relationshipService->createOrUpdate($user);
     }
 
 

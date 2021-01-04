@@ -8,3 +8,4 @@
 <link rel="stylesheet" href="{{ asset('custom/css/style.css') }}">
 <link rel="stylesheet" href="{{ asset('lib/perfect-scrollbar/css/perfect-scrollbar.css') }}">
 <link rel="stylesheet" href="{{ asset('lib/font-awesome/css/font-awesome.min.css') }}">
+<link rel="stylesheet" href="{{ asset('lib/sweetalert2/dist/sweetalert2.min.js') }}">

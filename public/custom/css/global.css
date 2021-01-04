@@ -14,3 +14,8 @@
     -ms-flex-align: center;
     align-items: center;
 }
+
+
+.kt-user-card .kt-user-card__name {
+    word-break: break-word;
+}

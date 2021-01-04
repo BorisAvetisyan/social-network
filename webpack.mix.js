@@ -22,6 +22,7 @@ mix.copy('node_modules/jquery', 'public/js/jquery')
     .copy('node_modules/perfect-scrollbar', 'public/lib/perfect-scrollbar')
     .copy('node_modules/line-awesome', 'public/lib/line-awesome')
     .copy('node_modules/font-awesome', 'public/lib/font-awesome')
+    .copy('node_modules/sweetalert2', 'public/lib/sweetalert2')
     .postCss('resources/css/app.css', 'public/css', [
         //
     ]);
