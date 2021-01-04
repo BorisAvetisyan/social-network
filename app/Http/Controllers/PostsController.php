@@ -21,7 +21,7 @@ class PostsController extends Controller
         $user = User::find($userid);
         $authId = Auth::id();
 
-        if(!Auth::user()->isFriend($user)) {
+        if(Auth::id() != intval($userid) && !Auth::user()->isFriend($user)) {
             return Utils::returnUnauthorizedResponse();
         }
 

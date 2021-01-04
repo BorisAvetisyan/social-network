@@ -148,6 +148,10 @@ function template(row) {
     if(row.status === 'rejected') {
         html = "<button class='friend btn btn-danger btn-sm' data-status='pending' data-user="+row.id+">Rejected/Resend</button>";
     }
+    if(row.status === 'approved') {
+        html = "";
+    }
+
     container.find(".select2-result-repository__title").text(row.name + " " + row.surname + `(${row.email})`);
     container.find(".select2-result-repository__forks").html(html);
     return container;

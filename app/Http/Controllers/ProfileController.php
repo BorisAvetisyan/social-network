@@ -11,7 +11,7 @@ class ProfileController extends Controller
     public function index($id) {
         $user = User::find($id);
         $posts = $user->receivedPosts;
-        if(!Auth::user()->isFriend($user)) {
+        if(Auth::id() != $id && !Auth::user()->isFriend($user)) {
             Utils::returnUnauthorizedResponse();
         }
         return view('profile', compact('user', 'posts'));

@@ -63,23 +63,16 @@ class UserService {
      */
     public function getUsers(Request $request) {
         $status = $request->get('status');
-        $target = $request->get('target');
+        $target = strtolower($request->get('target'));
         $authUserId = Auth::id();
+        $query = null;
 
-        $query = User::query();
-
-        $this->makeUserSearchCriteria($target, $query);
-
-        $query->leftJoin('relationships as rs', 'rs.receiver_id', '=', 'users.id');
         if($status === Relationship::APPROVED) {
-            $query->select(
-                DB::raw('(case when rs.id is not null then rs.id else rs2.id end) as id'),
-                DB::raw('(case when rs.status is not null then rs.status else rs2.status end) as status, users.id as user_id'),
-                'users.name', 'users.email', 'users.surname');
-            $query->leftJoin('relationships as rs2', 'rs2.sender_id', '=', 'users.id');
-            $query->whereRaw("(rs.status = '$status' or rs2.status = '$status')");
-            $query->where('users.id', '!=', $authUserId);
+            $query = $this->makeFriendsQuery($target);
         } elseif ($status === Relationship::REJECTED || $status === Relationship::PENDING) {
+            $query = User::query();
+            $this->makeUserSearchCriteria($target, $query);
+            $query->leftJoin('relationships as rs', 'rs.receiver_id', '=', 'users.id');
             $query->where('sender_id', '=', $authUserId);
             $query->where('rs.status', '=', $status);
         }
@@ -122,16 +115,46 @@ class UserService {
         $query->offset(($pageNumber - 1) * $perPage);
     }
 
+    public function makeFriendsQuery($target) {
+        $authId = Auth::id();
+        $approved = Relationship::APPROVED;
+        $query = Relationship::query();
+        $query->select(
+            'relationships.id',
+          'relationships.status',
+          DB::raw("(case when u.id = $authId then u2.id else u.id end) as user_id"),
+          DB::raw("(case when u.id = $authId then u2.name else u.name end) as name"),
+          DB::raw("(case when u.id = $authId then u2.surname else u.surname end) as surname"),
+          DB::raw("(case when u.id = $authId then u2.email else u.email end) as email"),
+        );
+        $query->leftJoin('users as u', 'u.id', '=', 'relationships.sender_id');
+        $query->leftJoin('users as u2', 'u2.id', '=', 'relationships.receiver_id');
+        $query->whereRaw("(sender_id = $authId or receiver_id = $authId) and status = '$approved' ");
+
+        if(!empty($target)) {
+            $query->whereRaw('
+                    (case when u.id = '.$authId.' then (LOWER(u2.email) like \'%'. $target .'%\' or
+                               LOWER(u2.name) like \'%'. $target .'%\' or
+                               LOWER(u2.surname) like \'%'. $target .'%\'
+                    ) else (LOWER(u2.email) like \'%'. $target .'%\' or
+                               LOWER(u2.name) like \'%'. $target .'%\' or
+                               LOWER(u2.surname) like \'%'. $target .'%\'
+                    ) end )');
+        }
+        return $query;
+    }
+
     /**
      * UTIL function
      * @param $target
      * @param $query
+     * @param string $alias
      */
-    public function makeUserSearchCriteria($target, $query) {
+    public function makeUserSearchCriteria($target, $query, $alias = 'users') {
         if(!empty($target)) {
-            $query->whereRaw('(LOWER(users.email) like \'%'. $target .'%\' or
-                               LOWER(users.name) like \'%'. $target .'%\' or
-                               LOWER(users.surname) like \'%'. $target .'%\'
+            $query->whereRaw('(LOWER('.$alias.'.email) like \'%'. $target .'%\' or
+                               LOWER('.$alias.'.name) like \'%'. $target .'%\' or
+                               LOWER('.$alias.'.surname) like \'%'. $target .'%\'
                     )');
         }
     }

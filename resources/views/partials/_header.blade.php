@@ -43,6 +43,7 @@
                             {{ csrf_field() }}
                             <button type="submit" target="_blank" class="btn btn-label btn-label-brand btn-sm btn-bold">Sign Out</button>
                         </form>
+                        <a href="{{ route('profile', user()->id) }}" type="button" class="btn btn-label btn-label-brand btn-sm btn-bold">My Posts</a>
                     </div>
                 </div>
 

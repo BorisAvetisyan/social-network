@@ -39,11 +39,6 @@
                         <div class="kt-login__copyright">
                             &copy {{date('Y')}} SNet
                         </div>
-                        <div class="kt-login__menu">
-                            <a href="#" class="kt-link">Privacy</a>
-                            <a href="#" class="kt-link">Legal</a>
-                            <a href="#" class="kt-link">Contact</a>
-                        </div>
                     </div>
                 </div>
             </div>
