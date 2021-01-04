@@ -18,18 +18,20 @@ class UsersTableSeeder extends Seeder
         $int = 10000;
         for ($i = 0; $i < $int; $i++) {
             $string = $this->generateRandomString(6);
-            User::create([
-                    'name' => 'name_'.$string,
-                    'surname' => 'surname_'.$string,
-                    'email' => $string.'@'.$string.'.com',
-                    'password' => Hash::make('password')
-                ]
-            );
+            try {
+                User::create([
+                        'name' => $string,
+                        'surname' => $string,
+                        'email' => $string.'@'.$string.'.com',
+                        'password' => Hash::make('password')
+                    ]
+                );
+            } catch (\Exception $exception) {}
         }
     }
 
     function generateRandomString($length = 10) {
-        $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $characters = 'ACBabcdefghijmnoprtuvwy';
         $charactersLength = strlen($characters);
         $randomString = '';
         for ($i = 0; $i < $length; $i++) {
