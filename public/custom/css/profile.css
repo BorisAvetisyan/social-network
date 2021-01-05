@@ -13,3 +13,8 @@ textarea {
 .kt_chat__actions button {
     float: right;
 }
+
+.send-request {
+    font-size: 25px;
+    text-align: center;
+}

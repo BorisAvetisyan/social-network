@@ -22,12 +22,44 @@
                             <div class="kt-chat__label">
                                 <a href="#" class="kt-chat__title">{{ $user->name . ' ' . $user->surname }}</a>
                                 <span class="kt-chat__status">
-																<span class="kt-badge kt-badge--dot kt-badge--success"></span> Active
-															</span>
+                                    {{ $user->email }}
+                                </span>
                             </div>
                         </div>
                         <div class="kt-chat__right">
+                            @if(\Illuminate\Support\Facades\Auth::id() != $user->id)
+                                @if(!empty($singleUserRelationship))
+                                    @if($singleUserRelationship->status === \App\Models\Relationship::APPROVED)
+                                        <button class="btn btn-info btn-sm unfriend" data-relationship="{{ $singleUserRelationship->id }}">Unfriend</button>
+                                    @elseif($singleUserRelationship->status === \App\Models\Relationship::PENDING)
+                                        @if($singleUserRelationship->sender_id == \Illuminate\Support\Facades\Auth::id())
+                                            <button class="btn btn-warning btn-sm handle-sent-request"
+                                                    data-relationship="{{ $singleUserRelationship->id }}"
+                                            >Pending/Cancel</button>
+                                        @else
+                                                <button class="btn btn-info btn-sm suggestion-action"
+                                                        data-relationship="{{ $singleUserRelationship->id }}"
+                                                        data-action="{{ \App\Models\Relationship::APPROVED }}"
+                                                >Approve</button>
 
+                                                <button class="btn btn-danger btn-sm suggestion-action"
+                                                        data-relationship="{{ $singleUserRelationship->id }}"
+                                                        data-action="{{ \App\Models\Relationship::REJECTED }}"
+                                                >
+                                                 Reject
+                                                </button>
+                                        @endif
+                                    @else
+                                        @if($singleUserRelationship->receiver_id == \Illuminate\Support\Facades\Auth::id())
+                                            <button class="btn btn-success btn-sm friend" data-user="{{ $user->id }}">Send Friend Request</button>
+                                        @else
+                                            <button class="btn btn-danger btn-sm friend" data-user="{{ $user->id }}">Rejected/Resend</button>
+                                        @endif
+                                    @endif
+                                @else
+                                    <button class="btn btn-success btn-sm friend" data-user="{{ $user->id }}" data-status="{{ \App\Models\Relationship::PENDING }}">Send Friend Request</button>
+                                @endif
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -65,7 +97,11 @@
                 <div class="kt-portlet__foot">
                     <div class="kt-chat-input">
                         <div class="kt-chat__editor">
-                            <textarea style="height: 50px" placeholder="Type here..."></textarea>
+                            @if($isFriend || user()->id == $user->id)
+                                <textarea style="height: 50px" placeholder="Type here..."></textarea>
+                            @else
+                                <textarea style="height: 50px" disabled="disabled" placeholder="Becoming friends you will have capability to write a posts on this page" class="send-request"></textarea>
+                            @endif
                         </div>
                         <div class="kt-chat__toolbar">
                             <div class="kt_chat__tools">
@@ -74,7 +110,9 @@
                                 <a href="#"><i class="flaticon2-photo-camera"></i></a>
                             </div>
                             <div class="kt_chat__actions">
-                                <button type="button" class="btn btn-brand btn-md btn-upper btn-bold post" data-target-user="{{ $user->id }}">Post</button>
+                                <button type="button" class="btn btn-brand btn-md btn-upper btn-bold post"
+                                        {{ ($isFriend || user()->id == $user->id) ? "" : "disabled" }}
+                                        data-target-user="{{ $user->id }}">Post</button>
                             </div>
                         </div>
                     </div>

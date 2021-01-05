@@ -1,5 +1,9 @@
 $(document).ready(function () {
     handlePostClick();
+    friend();
+    unfriend();
+    handleSentRequest();
+    handleNotificationStatusChange();
 })
 
 
@@ -39,4 +43,59 @@ function postOnProfile() {
         }
         $('.post').prop('disabled', false)
     })
+}
+
+/** Unfriend User */
+function unfriend() {
+    $(document).on('click', '.unfriend', function () {
+        let relationship = $(this).data('relationship');
+        $(this).prop('disabled', true);
+        fireLoading();
+        makeAjaxRequest('users/unfriend','post', {relationship: relationship},(err, res) => {
+            pageReload();
+        })
+    })
+}
+
+/** Sends friends request */
+function friend() {
+    $(document).on('click', ".friend", function () {
+        let user = $(this).data('user');
+        let data = {
+            user: user,
+        }
+        fireLoading();
+        makeAjaxRequest("users/friend", 'post', data, (err, res) => {
+            pageReload();
+        })
+    })
+}
+
+/*** Cancel already sent request  */
+function handleSentRequest() {
+    $(document).on('click', '.handle-sent-request', function () {
+        $(this).prop('disabled', true);
+        let relationship = $(this).data('relationship');
+        makeAjaxRequest('relationships/cancel', 'post', {relationship: relationship}, (err, res) => {
+            pageReload();
+        })
+    })
+}
+
+
+/** Approve or Reject received notification from the user  */
+function handleNotificationStatusChange() {
+    $(document).on('click', ".suggestion-action", function () {
+        let action = $(this).data("action");
+        let relationship = $(this).data('relationship');
+        $(this).prop('disabled', true);
+        fireLoading();
+        makeAjaxRequest('users/notification/respond','post', {relationship: relationship, action: action}, (err, res) => {
+            pageReload();
+        })
+    })
+}
+
+function pageReload() {
+    window.location.reload();
 }

@@ -70,10 +70,10 @@ class RelationshipController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function notificationRespond(Request $request) {
-        $suggestionId = $request->get('notification');
+        $relationshipId = $request->get('relationship');
         $action = $request->get('action');
 
-        $relationship = Relationship::find($suggestionId);
+        $relationship = Relationship::find($relationshipId);
         $relationship->status = $action;
         try {
             $relationship->save();

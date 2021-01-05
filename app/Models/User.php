@@ -32,4 +32,8 @@ class User extends Authenticatable
             ->withApprovedStatus()
             ->first());
     }
+
+    public function singleRelationShipWithUser(User $user) {
+        return Relationship::whereRaw("(receiver_id = $this->id and sender_id = $user->id) or (sender_id = $this->id and receiver_id = $user->id)")->first();
+    }
 }

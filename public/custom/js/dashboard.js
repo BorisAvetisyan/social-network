@@ -4,13 +4,11 @@ var usersDatatable,
 $(document).ready(function () {
     $('#kt_form_status').selectpicker();
     initializeSelect2();
-    friend();
     handleNotificationStatusChange();
     constructUsersList();
     handleDatatableFiltering();
     initializeNotificationsDatatable();
     handleSentRequest();
-    unfriend();
 })
 
 /** Reload datatable based on the selected values(selectbox/searchbox)  **/
@@ -33,7 +31,7 @@ function initializeNotificationsDatatable() {
         title: 'Actions',
         sortable: false,
         template: function(row) {
-            return `<button class="btn btn-sm btn-clean suggestion-action" title="Approve" data-action="approved" data-notification="${row.id}" >Approve</button><button data-action="rejected" data-notification="${row.id}" class="btn btn-sm btn-clean suggestion-action" title="Reject">Reject</button>`
+            return `<button class="btn btn-sm btn-clean suggestion-action" title="Approve" data-action="approved" data-relationship="${row.id}" >Approve</button><button data-action="rejected" data-relationship="${row.id}" class="btn btn-sm btn-clean suggestion-action" title="Reject">Reject</button>`
         }
     });
     notificationsDatatable = initialiseKtDatatable('notifications-datatable', '/users/notifications/data', columns, () => {})
@@ -79,9 +77,9 @@ function handleSentRequest() {
 function handleNotificationStatusChange() {
     $(document).on('click', ".suggestion-action", function () {
         let action = $(this).data("action");
-        let notification = $(this).data('notification');
+        let relationship = $(this).data('relationship');
 
-        makeAjaxRequest('users/notification/respond','post', {notification: notification, action: action}, (err, res) => {
+        makeAjaxRequest('users/notification/respond','post', {relationship: relationship, action: action}, (err, res) => {
             usersDatatable.reload();
             notificationsDatatable.reload();
         })
@@ -105,19 +103,9 @@ function initializeSelect2() {
         cache: false
     })
 
-    $(searchEl).on('select2:select', function () {
-        $(searchEl).val('')
-        $(searchEl).attr('placeholder', 'Find People')
-    })
-}
-
-function unfriend() {
-    $(document).on('click', '.unfriend', function () {
-        let relationship = $(this).data('relationship');
-        $(this).prop('disabled', true);
-        makeAjaxRequest('users/unfriend','post', {relationship: relationship},(err, res) => {
-            usersDatatable.reload();
-        })
+    $(searchEl).on('select2:select', function (el) {
+        let profileUrl = url + '/users/profile/' + $(this).children('option:selected').val();
+        window.open(profileUrl)
     })
 }
 
@@ -141,34 +129,8 @@ function template(row) {
         "</div>"
     );
 
-    let html = "<button class='friend btn btn-success btn-sm' data-user="+row.id+">Friend</button>";
-
     container.find(".select2-result-repository__title").text(row.name + " " + row.surname + `(${row.email})`);
-    container.find(".select2-result-repository__forks").html(html);
     return container;
-}
-
-
-function friend() {
-    $(document).on('click', ".friend", function () {
-        let user = $(this).data('user');
-        let status = $(this).data('status');
-        let data = {
-            user: user,
-            status: status
-        }
-        fireLoading();
-        makeAjaxRequest("users/friend", 'post', data, (err, res) => {
-            if(res.success) {
-                fireSuccess(res.message || "Friend request has been successfully sent", "Note!");
-                usersDatatable.reload();
-                $(this).text("Pending")
-                $(this).attr('disabled', true);
-            } else {
-                fireError();
-            }
-        })
-    })
 }
 
 

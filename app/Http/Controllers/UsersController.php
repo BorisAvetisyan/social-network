@@ -46,7 +46,7 @@ class UsersController extends Controller
     public function notifications(Request $request) {
         $query = User::query();
         $query->select('relationships.id', 'users.name', 'users.email', 'users.surname', 'relationships.status');
-        $query->join('relationships', 'relationships.receiver_id', '=', 'users.id');
+        $query->join('relationships', 'relationships.sender_id', '=', 'users.id');
         $query->where('relationships.receiver_id','=', user()->id);
 
         $query->where('relationships.status', '=', Relationship::PENDING);
