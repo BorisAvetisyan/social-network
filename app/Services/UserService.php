@@ -133,9 +133,9 @@ class UserService {
                     (case when u.id = '.$authId.' then (LOWER(u2.email) like \'%'. $target .'%\' or
                                LOWER(u2.name) like \'%'. $target .'%\' or
                                LOWER(u2.surname) like \'%'. $target .'%\'
-                    ) else (LOWER(u2.email) like \'%'. $target .'%\' or
-                               LOWER(u2.name) like \'%'. $target .'%\' or
-                               LOWER(u2.surname) like \'%'. $target .'%\'
+                    ) else (LOWER(u.email) like \'%'. $target .'%\' or
+                               LOWER(u.name) like \'%'. $target .'%\' or
+                               LOWER(u.surname) like \'%'. $target .'%\'
                     ) end )');
         }
         return $query;
