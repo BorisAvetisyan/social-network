@@ -9,6 +9,9 @@ $(document).ready(function () {
     handleDatatableFiltering();
     initializeNotificationsDatatable();
     handleSentRequest();
+    unfriend(() => {
+        usersDatatable.reload();
+    });
 })
 
 /** Reload datatable based on the selected values(selectbox/searchbox)  **/

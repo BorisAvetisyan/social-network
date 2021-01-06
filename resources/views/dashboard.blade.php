@@ -89,6 +89,7 @@
     <script src="{{ asset('lib/select2/dist/js/select2.js') }}"></script>
     <script src="{{ asset('custom/js/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
 
+    <script src="{{ asset('custom/js/utils.js') }}"></script>
     <script src="{{ asset('custom/js/dashboard.js') }}"></script>
 @endsection
 

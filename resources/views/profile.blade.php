@@ -125,6 +125,7 @@
 @endsection
 
 @section('custom_scripts')
+    <script src="{{ asset('custom/js/utils.js') }}"></script>
     <script src="{{ asset('custom/js/chat.js') }}"></script>
     <script src="{{ asset('custom/js/profile.js') }}"></script>
 @endsection

@@ -1,7 +1,9 @@
 $(document).ready(function () {
     handlePostClick();
     friend();
-    unfriend();
+    unfriend(() => {
+        pageReload();
+    });
     handleSentRequest();
     handleNotificationStatusChange();
 })
@@ -45,17 +47,17 @@ function postOnProfile() {
     })
 }
 
-/** Unfriend User */
-function unfriend() {
-    $(document).on('click', '.unfriend', function () {
-        let relationship = $(this).data('relationship');
-        $(this).prop('disabled', true);
-        fireLoading();
-        makeAjaxRequest('users/unfriend','post', {relationship: relationship},(err, res) => {
-            pageReload();
-        })
-    })
-}
+// /** Unfriend User */
+// function unfriend() {
+//     $(document).on('click', '.unfriend', function () {
+//         let relationship = $(this).data('relationship');
+//         $(this).prop('disabled', true);
+//         fireLoading();
+//         makeAjaxRequest('users/unfriend','post', {relationship: relationship},(err, res) => {
+//             pageReload();
+//         })
+//     })
+// }
 
 /** Sends friends request */
 function friend() {
