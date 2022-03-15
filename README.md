@@ -1,5 +1,7 @@
 # Social Network application
 
+Social network application which gives possibility to make friend requests, write comments/messages.
+
 # Getting started
 
 ## Installation
